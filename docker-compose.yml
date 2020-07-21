@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  proxy:
+    image: jwilder/nginx-proxy:latest
+    ports:
+      - "8011:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    environment:
+      - DEFAULT_HOST=test.localhost
+
+  fpm:
+    image: php:fpm
+    environment:
+      - VIRTUAL_HOST=test.localhost
+      - VIRTUAL_PROTO=fastcgi
+      - VIRTUAL_ROOT=/var/www/html/
+    restart: always
+    build:
+        context: ./docker/php
+        dockerfile: Dockerfile
+    volumes:
+      - ./html/:/var/www/html/:cached
+      - ./docker/php/log:/var/log/:delegated
+      - ./docker/php/php-fpm.d/:/usr/local/etc/php-fpm.d/
+      - ./docker/php/conf.d/:/usr/local/etc/php/conf.d/
+
