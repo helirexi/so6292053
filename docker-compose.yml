@@ -2,6 +2,7 @@ version: "3"
 
 services:
   proxy:
+    restart: unless-stopped
     image: jwilder/nginx-proxy:latest
     ports:
       - "8011:80"
@@ -18,7 +19,7 @@ services:
       - VIRTUAL_HOST=test.localhost
       - VIRTUAL_PROTO=fastcgi
       - VIRTUAL_ROOT=/var/www/html/
-    restart: always
+    restart: unless-stopped
     build:
         context: ./docker/php
         dockerfile: Dockerfile
